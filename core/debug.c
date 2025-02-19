@@ -1,9 +1,9 @@
-#include <stdio.h>
-#include "value.h"
-#include "chunk.h"
 #include "debug.h"
+#include "chunk.h"
+#include "value.h"
+#include <stdio.h>
 
-void disassembleChunk(Chunk* chunk, const char* name) {
+void disassembleChunk(Chunk *chunk, const char *name) {
   printf("== %s ==\n", name);
 
   for (int offset = 0; offset < chunk->count;) {
@@ -11,32 +11,45 @@ void disassembleChunk(Chunk* chunk, const char* name) {
   }
 }
 
-
-static int simpleInstruction(const char* name, int offset) {
+static int simpleInstruction(const char *name, int offset) {
   printf("%s\n", name);
   return offset + 1;
 }
 
-static int constantInstruction(const char* name, Chunk* chunk,
-                               int offset) {
+static int constantInstruction(const char *name, Chunk *chunk, int offset) {
   uint8_t constant = chunk->code[offset + 1];
   printf("%-16s %4d '", name, constant);
   printValue(chunk->constants.values[constant]);
   printf("'\n");
+  return offset + 2;
 }
 
-int disassembleInstruction(Chunk* chunk, int offset) {
+int disassembleInstruction(Chunk *chunk, int offset) {
   printf("%04d ", offset);
 
+  if (offset > 0 && chunk->line[offset] == chunk->line[offset - 1]) {
+    printf("  |");
+  } else {
+    printf("%4d ", chunk->line[offset]);
+  }
   uint8_t instruction = chunk->code[offset];
   switch (instruction) {
-    case Op_return:
-      return simpleInstruction("OP_RETURN", offset);
-    case Op_constant:
-      return constantInstruction("OP_CONSTANT", chunk, offset);
-    default:
-      printf("Unknown opcode %d\n", instruction);
-      return offset + 1;
+  case Op_return:
+    return simpleInstruction("OP_RETURN", offset);
+  case Op_constant:
+    return constantInstruction("OP_CONSTANT", chunk, offset);
+  case Op_Negate:
+    return simpleInstruction("OP_NEGATE", offset);
+  case Op_Add:
+    return simpleInstruction("OP_ADD", offset);
+  case Op_Subtract:
+    return simpleInstruction("OP_SUBTRACT", offset);
+  case Op_Multiply:
+    return simpleInstruction("OP_MULTIPLY", offset);
+  case Op_Divide:
+    return simpleInstruction("OP_DIVIDE", offset);
+  default:
+    printf("Unknown opcode %d\n", instruction);
+    return offset + 1;
   }
 }
-

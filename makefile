@@ -6,7 +6,7 @@ CFLAGS = -Wall -g
 TARGET = singe
 
 # Define the object files
-OBJS = chunk.o debug.o memory.o singe.o
+OBJS = chunk.o debug.o memory.o singe.o value.o vm.o
 
 # Default rule to build the target
 all: $(TARGET)
@@ -28,10 +28,15 @@ memory.o: ./core/memory.c ./core/memory.h ./core/common.h
 singe.o: ./core/singe.c ./core/chunk.h ./core/debug.h ./core/memory.h
 	$(CC) $(CFLAGS) -c ./core/singe.c
 
+value.o: ./core/value.c ./core/value.h ./core/common.h
+	$(CC) $(CFLAGS) -c ./core/value.c
+
+vm.o: ./core/vm.c ./core/vm.h ./core/common.h
+	$(CC) $(CFLAGS) -c ./core/vm.c
+
 # Clean up generated files
 clean:
 	rm -f $(OBJS) $(TARGET)
 
 # Phony targets
 .PHONY: all clean
-

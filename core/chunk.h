@@ -7,6 +7,11 @@
 
 typedef enum {
   Op_constant,
+  Op_Add,
+  Op_Divide,
+  Op_Subtract,
+  Op_Multiply,
+  Op_Negate,
   Op_return,
 } OpCode;
 
@@ -15,11 +20,12 @@ typedef struct {
   int count;
   int capacity;
   uint8_t *code;
+  int *line;
   ValueArray constants;
 } Chunk;
 
 void initChunk(Chunk *chunk);
-void writeChunk(Chunk *chunk, uint8_t byte);
+void writeChunk(Chunk *chunk, uint8_t byte, int line);
 int addConstant(Chunk *chunk, Value value);
 void freeChunk(Chunk *chunk);
 #endif
